@@ -304,26 +304,11 @@ or run with:
             )
             exit(1)
 
-    if isinstance(model, LlamaForCausalLM):
-        model = model.model
 
-    if model.__class__.__name__ == "RWForCausalLM":
-        model = model.base_model
 
-    attention_key_lookup = {
-        LlamaModel: "self_attn",
-    }
-    mlp_key_lookup = {
-        LlamaModel: "mlp",
-    }
-    if model.__class__.__name__ == "RWModel":
-        layers = model.h
-        attention_key = "self_attention"
-        mlp_key = "mlp"
-    else:
-        layers = model.layers
-        attention_key = attention_key_lookup.get(model.__class__, "attention")
-        mlp_key = mlp_key_lookup.get(model.__class__, "mlp")
+    layers = model.model.layers
+    attention_key =  "self_attn"
+    mlp_key = "mlp"
     num_layers = len(layers)
     resid_pdrop_last_layer = resid_pdrop
     for i, layer in enumerate(layers):
