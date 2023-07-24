@@ -21,6 +21,18 @@ class Config:
 
 
 def main(args):
+    # this was hastily put together from a notebook, there might be bugs :(
+    import argparse
+    import json
+    from itertools import chain
+    from flash_patch import patch_model
+    import torch
+    import transformers
+    from datasets import load_dataset
+    from huggingface_hub import login
+    from peft import LoraConfig, get_peft_model
+    from transformers import (LlamaForCausalLM, AutoTokenizer,
+                              BitsAndBytesConfig)
     # kinda weird patching over notebook
     config_json = json.loads(open(args.config, "r").read())
     train_config = Config(**config_json)
