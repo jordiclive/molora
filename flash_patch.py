@@ -328,6 +328,7 @@ or run with:
     resid_pdrop_last_layer = resid_pdrop
     for i, layer in enumerate(layers):
         if flash_attention:
+            print('Attr',getattr(layer, attention_key))
             add_flash_attn(getattr(layer, attention_key), causal=True)
         if residual_dropout_lima:
             resid_pdrop = i / (num_layers - 1) * resid_pdrop_last_layer
