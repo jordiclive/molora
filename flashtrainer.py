@@ -8,7 +8,7 @@ import transformers
 from datasets import load_dataset
 from huggingface_hub import login
 from peft import LoraConfig, get_peft_model
-from transformers import (AutoModelForCausalLM, AutoTokenizer,
+from transformers import (LlamaForCausalLM, AutoTokenizer,
                           BitsAndBytesConfig)
 
 torch.manual_seed(0)
@@ -28,7 +28,10 @@ def main(args):
 
     tokenizer = AutoTokenizer.from_pretrained(train_config.model_id)
     tokenizer.model_max_length = train_config.context_length
-    model = AutoModelForCausalLM.from_pretrained(
+
+    from transformers import (LlamaForCausalLM, AutoTokenizer,
+                              BitsAndBytesConfig)
+    model = LlamaForCausalLM.from_pretrained(
         train_config.model_id,
         device_map='auto',  # device_map={"":0}, # entire model needs to be on cuda for lora, make sure it'll fit
         load_in_8bit=train_config.load_in_8bit,
