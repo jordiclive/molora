@@ -1,0 +1,47 @@
+{
+    "model_id": "NousResearch/Nous-Hermes-Llama2-13b", 
+    "bf16": true, 
+    "load_in_8bit": false,
+    "load_in_4bit": false,
+    "optim": "adamw_hf", 
+    "use_lora": true,
+    "lora": {
+        "rank": 32, 
+        "alpha": 32, 
+        "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj"],
+        "lora_dropout": 0.05
+    }, 
+    "data_processing": "alpaca-packing",
+    "learning_rate": 0.0001, 
+    
+    "batch_size": 1,
+    "gradient_accumulation_steps": 8, 
+    "context_length": 4096, 
+    "logging_steps": 8, 
+    
+    "max_steps": -1, 
+    "num_train_epochs": 1, 
+    "warmup_steps": 128,
+    
+    "dataset_text_column": "text",
+    
+    "dataset_instruction_column": "instruction", 
+    "dataset_input_column": "input",
+    "dataset_output_column": "output", 
+
+    "dataset_user_role": "### human:", 
+    "dataset_input_role": "### input:",
+    "dataset_assistant_role": "### response:", 
+    "cluster": "none",
+    
+    "all_columns": ["output", "instruction", "input"],
+    "dataset_kwargs": {
+        "path": "json",
+	"data_files": ["camel-ai-datasets/combined-math.json", "camel-ai-datasets/combined-physics.json"], 
+        "name": null,
+        "streaming": false, 
+        "split": "train"    
+    }, 
+    "output_is_repo": false,
+    "output": "mathphysics-adapter/hermes-mathphysics-adapter"
+}
