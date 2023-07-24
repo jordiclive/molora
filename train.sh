@@ -19,4 +19,4 @@ export PATH="/p/software/juwelsbooster/stages/2023/software/OpenMPI/4.1.4-GCC-11
 
 cd /p/home/jusers/clive1/juwels/clive1/molora
 
-python flashtrainer.py --config config-mathphysics.json
+python flashtrainer.py --config /p/project/ccstdl/clive1/molora/combined-math.json
