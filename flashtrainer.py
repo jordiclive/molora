@@ -1,14 +1,17 @@
 # this was hastily put together from a notebook, there might be bugs :(
 import argparse
 import json
+import os
 from itertools import chain
+import flash_patch
 from flash_patch import patch_model
 import torch
 import transformers
+from transformers import LlamaForCausalLM
 from datasets import load_dataset
 from huggingface_hub import login
 from peft import LoraConfig, get_peft_model
-from transformers import (LlamaForCausalLM, AutoTokenizer,
+from transformers import (AutoModelForCausalLM, AutoTokenizer,
                           BitsAndBytesConfig)
 
 torch.manual_seed(0)
@@ -21,18 +24,6 @@ class Config:
 
 
 def main(args):
-    # this was hastily put together from a notebook, there might be bugs :(
-    import argparse
-    import json
-    from itertools import chain
-    from flash_patch import patch_model
-    import torch
-    import transformers
-    from datasets import load_dataset
-    from huggingface_hub import login
-    from peft import LoraConfig, get_peft_model
-    from transformers import (LlamaForCausalLM, AutoTokenizer,
-                              BitsAndBytesConfig)
     # kinda weird patching over notebook
     config_json = json.loads(open(args.config, "r").read())
     train_config = Config(**config_json)
@@ -40,24 +31,14 @@ def main(args):
 
     tokenizer = AutoTokenizer.from_pretrained(train_config.model_id)
     tokenizer.model_max_length = train_config.context_length
-
-    from transformers import (LlamaForCausalLM, AutoTokenizer,
-                              BitsAndBytesConfig)
     model = LlamaForCausalLM.from_pretrained(
         train_config.model_id,
         device_map='auto',  # device_map={"":0}, # entire model needs to be on cuda for lora, make sure it'll fit
-        load_in_8bit=train_config.load_in_8bit,
-        load_in_4bit=train_config.load_in_4bit,
+        load_in_8bit=False,
+        load_in_4bit=False,
         trust_remote_code=True,
         torch_dtype=train_config.torch_dtype,
     )
-    
-    model = patch_model(
-            model,
-            resid_pdrop=None,
-            flash_attention=True,
-        )
-
     def print_trainable_parameters(model):
         trainable_params = 0
         all_param = 0
@@ -81,7 +62,12 @@ def main(args):
         #for name, module in model.named_modules():
             #if "norm" in name:
                 #module = module.to(torch.float32)
-        #model = patch_model(model)        
+        #model = patch_model(model)
+        patch_model(
+            model,
+            resid_pdrop=None,
+            flash_attention=True,
+        )
         model = get_peft_model(model, config)
         print_trainable_parameters(model)
 
